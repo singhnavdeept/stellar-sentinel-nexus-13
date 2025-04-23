@@ -1,4 +1,3 @@
-
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import StarField from '@/components/ui/StarField';
@@ -7,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { useGroqChat } from '@/hooks/useGroqChat';
 
 // Interface for SpaceX launch data
 interface SpaceXLaunch {
@@ -56,102 +56,34 @@ const Chatbot = () => {
       return 'unknown date';
     }
   };
+  const { sendMessage, isLoading } = useGroqChat();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
     
     // Add user message
-    setMessages(prev => [...prev, { type: 'user', content: inputValue }]);
-    
-    // Process the message and generate a response
-    const userQuestion = inputValue.toLowerCase();
+    const userMessage = { type: 'user', content: inputValue } as Message;
+    setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     
-    // Simulate AI response based on the question
-    setTimeout(() => {
-      // Check if the question is about SpaceX launches
-      if (
-        userQuestion.includes('spacex') || 
-        userQuestion.includes('launch') || 
-        userQuestion.includes('falcon') || 
-        userQuestion.includes('rocket')
-      ) {
-        // If we have launch data and the question is about the latest launch
-        if (launchData && (
-          userQuestion.includes('latest') || 
-          userQuestion.includes('recent') || 
-          userQuestion.includes('last')
-        )) {
-          const successText = launchData.success === true 
-            ? 'was successful' 
-            : launchData.success === false 
-              ? 'was unsuccessful' 
-              : 'has an unknown status';
-              
-          setMessages(prev => [...prev, { 
-            type: 'bot', 
-            content: `The latest SpaceX mission was "${launchData.name}" launched on ${formatDate(launchData.date_utc)}. The mission ${successText}. ${launchData.details || 'No additional details are available.'} You can view more information about this on the Dashboard page.`
-          }]);
-        } 
-        // If the question is about mission success
-        else if (
-          userQuestion.includes('successful') || 
-          userQuestion.includes('success')
-        ) {
-          if (launchData) {
-            const successResponse = launchData.success === true 
-              ? `Yes, the ${launchData.name} mission was successful.` 
-              : launchData.success === false 
-                ? `No, the ${launchData.name} mission was not successful.` 
-                : `The success status of the ${launchData.name} mission is currently unknown.`;
-            
-            setMessages(prev => [...prev, { 
-              type: 'bot', 
-              content: successResponse + ' You can see more details on our Dashboard.'
-            }]);
-          } else {
-            setMessages(prev => [...prev, { 
-              type: 'bot', 
-              content: 'I don\'t have information about the latest launch success at the moment. Please check our Dashboard for the most up-to-date information.'
-            }]);
-          }
-        }
-        // If the question is about images or videos
-        else if (
-          userQuestion.includes('image') || 
-          userQuestion.includes('photo') || 
-          userQuestion.includes('video') || 
-          userQuestion.includes('watch')
-        ) {
-          if (launchData && launchData.links.webcast) {
-            setMessages(prev => [...prev, { 
-              type: 'bot', 
-              content: `You can watch the ${launchData.name} mission webcast on YouTube. The video link is available on our Dashboard page along with mission photos if available.`
-            }]);
-          } else {
-            setMessages(prev => [...prev, { 
-              type: 'bot', 
-              content: 'Media for the latest launch can be found on our Dashboard page. I recommend checking there for images and video links.'
-            }]);
-          }
-        }
-        // General SpaceX question
-        else {
-          setMessages(prev => [...prev, { 
-            type: 'bot', 
-            content: 'SpaceX conducts regular launches for various missions including satellite deployments, ISS resupply, and crewed missions. You can view the latest launch information on our Dashboard page. Would you like to know about a specific aspect of SpaceX missions?'
-          }]);
-        }
-      } 
-      // Default response for non-SpaceX questions
-      else {
-        setMessages(prev => [...prev, { 
-          type: 'bot', 
-          content: 'I\'m your space weather assistant. I can provide information about solar phenomena, space weather conditions, and recent space events including SpaceX launches. How can I help you today?'
-        }]);
+    try {
+      // Format messages for Groq
+      const groqMessages = messages.map(msg => ({
+        role: msg.type,
+        content: msg.content
+      }));
+      groqMessages.push({ role: 'user', content: userMessage.content });
+      
+      // Get response from Groq
+      const response = await sendMessage(groqMessages);
+      
+      if (response) {
+        setMessages(prev => [...prev, { type: 'bot', content: response }]);
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Failed to get response:', error);
+    }
   };
 
   return (
