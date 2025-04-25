@@ -1,27 +1,35 @@
 
 import { useState } from 'react';
 
-const GROQ_API_KEY = "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";
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-
-export const useGroqChat = () => {
+export const useGroqChat = (apiKey: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const sendMessage = async (messages: Array<{ role: string; content: string }>) => {
+    if (!apiKey) {
+      setError("No API key provided");
+      return null;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(GROQ_API_URL, {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           model: 'mixtral-8x7b-32768',
-          messages,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a knowledgeable space weather assistant. Provide accurate, engaging information about solar phenomena, space weather events, and their impacts on Earth. Use clear, accessible language while maintaining scientific accuracy.'
+            },
+            ...messages
+          ],
           temperature: 0.7,
           max_tokens: 2048,
         }),
