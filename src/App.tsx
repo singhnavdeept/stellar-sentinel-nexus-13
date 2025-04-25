@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,7 @@ import Chatbot from "./pages/Chatbot";
 import Resources from "./pages/Resources";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import NasaImageBot from "./pages/NasaImageBot";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +54,11 @@ const App = () => (
             <Route path="/resources" element={
               <ProtectedRoute>
                 <Resources />
+              </ProtectedRoute>
+            } />
+            <Route path="/nasa-images" element={
+              <ProtectedRoute>
+                <NasaImageBot />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
