@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, MoonStar, LogOut } from 'lucide-react';
@@ -54,7 +53,6 @@ const Navbar = () => {
                 <Link to="/dashboard" className="nav-link">Live Data</Link>
                 <Link to="/nasa-images" className="nav-link">NASA Images</Link>
                 <Link to="/chatbot" className="nav-link">AI Assistant</Link>
-                <Link to="/resources" className="nav-link">Resources</Link>
                 <button 
                   onClick={handleLogout}
                   className="nav-link flex items-center gap-2"
@@ -92,7 +90,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <div className={`md:hidden transition-all duration-300 ease-in-out ${
         isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
       } overflow-hidden bg-space/90 backdrop-blur-md`}>
@@ -110,9 +107,6 @@ const Navbar = () => {
               </Link>
               <Link to="/chatbot" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                 AI Assistant
-              </Link>
-              <Link to="/resources" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
-                Resources
               </Link>
               <button 
                 onClick={() => {

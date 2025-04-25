@@ -1,16 +1,13 @@
 
 import { useState } from 'react';
 
-export const useGroqChat = (apiKey: string | null) => {
+export const useGroqChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sendMessage = async (messages: Array<{ role: string; content: string }>) => {
-    if (!apiKey) {
-      setError("No API key provided");
-      return null;
-    }
+  const GROQ_API_KEY = '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';
 
+  const sendMessage = async (messages: Array<{ role: string; content: string }>) => {
     setIsLoading(true);
     setError(null);
 
@@ -18,7 +15,7 @@ export const useGroqChat = (apiKey: string | null) => {
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

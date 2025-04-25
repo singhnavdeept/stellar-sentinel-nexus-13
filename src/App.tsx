@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,13 +8,11 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import NasaImageBot from "./pages/NasaImageBot";
 import Chatbot from "./pages/Chatbot";
-import Resources from "./pages/Resources";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
-// Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   
@@ -49,11 +46,6 @@ const App = () => (
             <Route path="/chatbot" element={
               <ProtectedRoute>
                 <Chatbot />
-              </ProtectedRoute>
-            } />
-            <Route path="/resources" element={
-              <ProtectedRoute>
-                <Resources />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

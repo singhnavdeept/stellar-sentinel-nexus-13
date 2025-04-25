@@ -29,20 +29,7 @@ const Dashboard = () => {
           
           <div className="space-y-8">
             <SpaceWeatherSection />
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <SpaceXLatestLaunch />
-              
-              {/* Placeholder card for future space weather data */}
-              <div className="glass-card p-8 rounded-xl min-h-[400px] flex items-center justify-center">
-                <div className="text-center">
-                  <h2 className="text-2xl font-bold text-white mb-2">Space Weather Data</h2>
-                  <p className="text-space-muted">
-                    Our live space weather monitoring is under development. Check back soon for real-time data.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <SpaceXLatestLaunch />
           </div>
         </div>
       </main>
