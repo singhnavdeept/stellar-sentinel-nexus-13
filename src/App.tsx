@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,12 +7,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
-import Phenomena from "./pages/Phenomena";
+import NasaImageBot from "./pages/NasaImageBot";
 import Chatbot from "./pages/Chatbot";
 import Resources from "./pages/Resources";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
-import NasaImageBot from "./pages/NasaImageBot";
 
 const queryClient = new QueryClient();
 
@@ -41,9 +41,9 @@ const App = () => (
                 <Dashboard />
               </ProtectedRoute>
             } />
-            <Route path="/phenomena" element={
+            <Route path="/nasa-images" element={
               <ProtectedRoute>
-                <Phenomena />
+                <NasaImageBot />
               </ProtectedRoute>
             } />
             <Route path="/chatbot" element={
@@ -54,11 +54,6 @@ const App = () => (
             <Route path="/resources" element={
               <ProtectedRoute>
                 <Resources />
-              </ProtectedRoute>
-            } />
-            <Route path="/nasa-images" element={
-              <ProtectedRoute>
-                <NasaImageBot />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

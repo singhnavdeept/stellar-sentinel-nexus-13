@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, MoonStar, LogOut } from 'lucide-react';
@@ -51,7 +52,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <Link to="/dashboard" className="nav-link">Live Data</Link>
-                <Link to="/phenomena" className="nav-link">Phenomena</Link>
+                <Link to="/nasa-images" className="nav-link">NASA Images</Link>
                 <Link to="/chatbot" className="nav-link">AI Assistant</Link>
                 <Link to="/resources" className="nav-link">Resources</Link>
                 <button 
@@ -104,8 +105,8 @@ const Navbar = () => {
               <Link to="/dashboard" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                 Live Data
               </Link>
-              <Link to="/phenomena" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
-                Phenomena
+              <Link to="/nasa-images" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                NASA Images
               </Link>
               <Link to="/chatbot" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
                 AI Assistant

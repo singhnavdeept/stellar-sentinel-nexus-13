@@ -1,38 +1,9 @@
+
 import { useState } from 'react';
-import { getAPOD, searchNASAImages } from '../services/nasaApi';
 
 export const useGroqChat = (apiKey: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const processNASACommands = async (message: string) => {
-    const lowerMessage = message.toLowerCase();
-    
-    try {
-      if (lowerMessage.includes('today') && 
-          (lowerMessage.includes('space pic') || lowerMessage.includes('apod'))) {
-        const apod = await getAPOD();
-        return `🌟 **${apod.title}**\n\n![${apod.title}](${apod.url})\n\n${apod.explanation}`;
-      }
-      
-      if (lowerMessage.includes('show') || lowerMessage.includes('find') || 
-          lowerMessage.includes('search')) {
-        const searchTerms = message.replace(/show|find|search|me|some|pictures|photos|of/gi, '').trim();
-        if (searchTerms) {
-          const images = await searchNASAImages(searchTerms);
-          if (images.length === 0) return "No space media found for that topic—want to try another term?";
-          
-          return images.map(img => 
-            `🛸 **${img.title}**\n![${img.title}](${img.thumbnail})\n[View Full Image](${img.href})\n\n`
-          ).join('');
-        }
-      }
-      return null;
-    } catch (err) {
-      console.error('NASA API Error:', err);
-      return null;
-    }
-  };
 
   const sendMessage = async (messages: Array<{ role: string; content: string }>) => {
     if (!apiKey) {
@@ -44,13 +15,6 @@ export const useGroqChat = (apiKey: string | null) => {
     setError(null);
 
     try {
-      // Check for NASA-specific commands first
-      const nasaResponse = await processNASACommands(messages[messages.length - 1].content);
-      if (nasaResponse) {
-        setIsLoading(false);
-        return nasaResponse;
-      }
-
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
