@@ -26,7 +26,6 @@ export interface SolarFlareEvent extends SpaceWeatherEvent {
   classType: string;
   intensity: string;
   peakTime: string;
-  peakTime: string;
 }
 
 export const fetchSpaceWeatherData = async (endpoint: string, params: Record<string, string> = {}) => {
