@@ -1,4 +1,3 @@
-
 const NASA_API_KEY = 'ZThlBSUgbRRdoK4aPby3FiEHy4majxRM93PzfecO';
 const BASE_URL = 'https://api.nasa.gov/DONKI';
 
@@ -26,6 +25,7 @@ export interface CMEEvent extends SpaceWeatherEvent {
 export interface SolarFlareEvent extends SpaceWeatherEvent {
   classType: string;
   intensity: string;
+  peakTime: string;
   peakTime: string;
 }
 
@@ -63,4 +63,47 @@ export const getRecentEvents = async () => {
     solarFlares: flareData || [],
     geomagneticStorms: stormData || [],
   };
+};
+
+const NASA_API_BASE = 'https://api.nasa.gov';
+const NASA_IMAGES_BASE = 'https://images-api.nasa.gov';
+
+interface APODResponse {
+  title: string;
+  explanation: string;
+  url: string;
+  media_type: string;
+  date: string;
+}
+
+interface NASAImage {
+  title: string;
+  description: string;
+  href: string;
+  thumbnail?: string;
+}
+
+export const getAPOD = async (): Promise<APODResponse> => {
+  const response = await fetch(
+    `${NASA_API_BASE}/planetary/apod?api_key=${NASA_API_KEY}`
+  );
+  if (!response.ok) throw new Error('Failed to fetch APOD');
+  return response.json();
+};
+
+export const searchNASAImages = async (query: string): Promise<NASAImage[]> => {
+  const response = await fetch(
+    `${NASA_IMAGES_BASE}/search?q=${encodeURIComponent(query)}&media_type=image`
+  );
+  if (!response.ok) throw new Error('Failed to fetch NASA images');
+  const data = await response.json();
+  
+  return data.collection.items
+    .slice(0, 5)
+    .map((item: any) => ({
+      title: item.data[0].title,
+      description: item.data[0].description,
+      href: item.links?.[0]?.href || '',
+      thumbnail: item.links?.[0]?.href || ''
+    }));
 };
