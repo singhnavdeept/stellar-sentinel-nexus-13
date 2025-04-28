@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { searchNASAImages } from '@/services/nasaImageApi';
 import StarField from '@/components/ui/StarField';
 import { Link } from 'react-router-dom';
@@ -8,10 +7,11 @@ import { ArrowLeft, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent } from '@/components/ui/card';
 
 const NasaImageBot = () => {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<string>('');
+  const [images, setImages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -21,18 +21,15 @@ const NasaImageBot = () => {
 
     setIsLoading(true);
     try {
-      const images = await searchNASAImages(query);
-      if (images.length === 0) {
-        setResults('No images found for your search. Try different keywords!');
+      const searchResults = await searchNASAImages(query);
+      if (searchResults.length === 0) {
+        toast({
+          title: "No Results",
+          description: "No images found for your search. Try different keywords!",
+          variant: "default"
+        });
       } else {
-        const formattedResults = images.map(img => (
-          `**${img.title}**\n` +
-          `- 📅 Date: ${new Date(img.date_created).toLocaleDateString()}\n` +
-          `- 📝 Description: ${img.description?.slice(0, 150)}...\n` +
-          `- 🆔 NASA ID: ${img.nasa_id}\n` +
-          `- 🔗 Preview: [View Image](${img.preview_url})\n\n`
-        )).join('');
-        setResults(formattedResults);
+        setImages(searchResults);
       }
     } catch (error) {
       toast({
@@ -50,7 +47,7 @@ const NasaImageBot = () => {
       <StarField />
       
       <main className="pt-24 pb-16 relative z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="text-space-muted hover:text-white flex items-center gap-2 mb-4">
             <ArrowLeft size={16} />
             Back to Home
@@ -82,10 +79,32 @@ const NasaImageBot = () => {
           </form>
           
           {isLoading ? (
-            <div className="text-space-muted">Searching for images...</div>
-          ) : results ? (
-            <div className="prose prose-invert max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: results }} />
+            <div className="text-space-muted text-center py-8">Searching for images...</div>
+          ) : images.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {images.map((img, index) => (
+                <Card key={index} className="bg-space-blue/20 border-white/10 overflow-hidden">
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img 
+                      src={img.preview_url} 
+                      alt={img.title} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder.svg';
+                      }}
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="text-white font-semibold text-lg mb-2">{img.title}</h3>
+                    <p className="text-space-muted text-sm mb-2">
+                      {new Date(img.date_created).toLocaleDateString()}
+                    </p>
+                    <p className="text-space-muted text-sm line-clamp-3">
+                      {img.description?.slice(0, 150)}{img.description?.length > 150 ? '...' : ''}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           ) : null}
         </div>
